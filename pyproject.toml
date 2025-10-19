@@ -1,0 +1,137 @@
+[build-system]
+requires = ["setuptools>=68", "wheel", "setuptools_scm>=8"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "rclone-adapter"
+version = "0.1.0"
+description = "Modern async Python wrapper for rclone"
+readme = "README.md"
+license = {text = "MIT"}
+authors = [{name = "Dirk Petersen", email = "dp@nowhere.com"}]
+requires-python = ">=3.11"
+keywords = ["rclone", "cloud", "storage", "async", "s3", "backup"]
+
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Intended Audience :: System Administrators",
+    "Topic :: System :: Archiving",
+    "Topic :: System :: Filesystems",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: Implementation :: CPython",
+    "Framework :: AsyncIO",
+]
+
+dependencies = [
+    "pydantic>=2.0,<3.0",
+    "rich>=13.0,<14.0",
+    "structlog>=24.0,<25.0",
+]
+
+[project.optional-dependencies]
+api = [
+    "fastapi>=0.110,<1.0",
+    "rq>=1.16,<2.0",
+    "redis>=5.0,<6.0",
+    "uvicorn>=0.27,<1.0",
+]
+dev = [
+    "pytest>=8.0,<9.0",
+    "pytest-asyncio>=0.23,<1.0",
+    "pytest-cov>=4.1,<5.0",
+    "mypy>=1.8,<2.0",
+    "ruff>=0.2,<1.0",
+    "freezegun>=1.4,<2.0",
+    "fakeredis>=2.21,<3.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/dirkpetersen/rclone-adapter"
+Repository = "https://github.com/dirkpetersen/rclone-adapter"
+Issues = "https://github.com/dirkpetersen/rclone-adapter/issues"
+Documentation = "https://github.com/dirkpetersen/rclone-adapter/blob/main/README.md"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["rclone*"]
+
+[tool.setuptools.package-data]
+rclone = ["bin/*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+asyncio_mode = "auto"
+addopts = "-v"
+markers = [
+    "integration: marks tests requiring rclone installed (deselect with '-m \"not integration\"')",
+    "benchmark: marks performance/benchmark tests",
+]
+
+[tool.coverage.run]
+source = ["rclone"]
+omit = ["tests/*", "setup.py", "rclone/_generated/*"]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "if __name__ == .__main__.:",
+    "if TYPE_CHECKING:",
+    "class .*\\bProtocol\\):",
+    "@(abc\\.)?abstractmethod",
+]
+
+[tool.ruff]
+target-version = "py311"
+line-length = 100
+
+[tool.ruff.lint]
+select = [
+    "E",   # pycodestyle errors
+    "F",   # pyflakes
+    "I",   # isort
+    "N",   # pep8-naming
+    "UP",  # pyupgrade
+    "ANN", # annotations
+    "ASYNC", # async
+    "S",   # bandit
+    "B",   # bugbear
+    "C4",  # comprehensions
+    "DTZ", # datetime
+    "T20", # print
+    "SIM", # simplify
+]
+ignore = [
+    "ANN101", # missing type annotation for self
+    "ANN102", # missing type annotation for cls
+    "ANN401", # any type
+    "S101",   # assert
+    "T201",   # print (we use structlog)
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["S101", "ANN"]
+"_generated/*" = ["ALL"]
+
+[tool.mypy]
+python_version = "3.11"
+strict = true
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+disallow_any_generics = false
+check_untyped_defs = true
+
+[[tool.mypy.overrides]]
+module = "rclone._generated.*"
+ignore_errors = true

@@ -1,0 +1,7 @@
+include README.md
+include LICENSE
+include CLAUDE.md
+recursive-include rclone/bin *
+recursive-include rclone *.py
+recursive-include tests *.py
+recursive-include examples *.py

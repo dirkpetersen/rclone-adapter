@@ -1,0 +1,139 @@
+name: Publish to PyPI
+
+on:
+  release:
+    types: [published]
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to publish to'
+        required: true
+        default: 'testpypi'
+        type: choice
+        options:
+          - testpypi
+          - pypi
+
+jobs:
+  build:
+    name: Build distributions
+    runs-on: ubuntu-latest
+    outputs:
+      wheel-artifact: ${{ steps.build.outputs.wheel-artifact }}
+      sdist-artifact: ${{ steps.build.outputs.sdist-artifact }}
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install build dependencies
+        run: pip install -U pip build wheel setuptools
+
+      - name: Create bin directory with rclone binary
+        run: |
+          mkdir -p rclone/bin
+
+          # Download rclone binaries for current platform (Linux in CI)
+          wget -q https://downloads.rclone.org/rclone-current-linux-amd64.zip -O /tmp/rclone-amd64.zip
+          unzip -q /tmp/rclone-amd64.zip -d /tmp/
+          find /tmp -name "rclone" -type f ! -path "*/.*" | head -1 | xargs -I {} cp {} rclone/bin/rclone-linux-amd64
+          chmod +x rclone/bin/rclone-linux-amd64
+
+          # Also create a symlink for generic "rclone" for development
+          cp rclone/bin/rclone-linux-amd64 rclone/bin/rclone
+
+      - name: Build distributions
+        id: build
+        run: |
+          python -m build
+          ls -lh dist/
+          echo "wheel-artifact=$(ls dist/*.whl | head -1 | xargs basename)" >> $GITHUB_OUTPUT
+          echo "sdist-artifact=$(ls dist/*.tar.gz | head -1 | xargs basename)" >> $GITHUB_OUTPUT
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: python-package-distributions
+          path: dist/
+          retention-days: 1
+
+  publish-to-testpypi:
+    name: Publish to TestPyPI
+    if: |
+      (github.event_name == 'push' && github.ref == 'refs/heads/main') ||
+      (github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'testpypi')
+    needs: [build]
+    runs-on: ubuntu-latest
+    environment:
+      name: testpypi
+      url: https://test.pypi.org/p/rclone-adapter
+    permissions:
+      id-token: write
+
+    steps:
+      - name: Download all the dists
+        uses: actions/download-artifact@v4
+        with:
+          name: python-package-distributions
+          path: dist/
+
+      - name: Verify distributions
+        run: |
+          ls -lh dist/
+          pip install twine
+          twine check dist/*
+
+      - name: Publish to TestPyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          repository-url: https://test.pypi.org/legacy/
+          skip-existing: true
+
+  publish-to-pypi:
+    name: Publish to PyPI
+    if: |
+      (startsWith(github.ref, 'refs/tags/v') && github.event_name == 'push') ||
+      (github.event_name == 'release' && github.event.action == 'published') ||
+      (github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'pypi')
+    needs: [build]
+    runs-on: ubuntu-latest
+    environment:
+      name: pypi
+      url: https://pypi.org/p/rclone-adapter
+    permissions:
+      id-token: write
+
+    steps:
+      - name: Download all the dists
+        uses: actions/download-artifact@v4
+        with:
+          name: python-package-distributions
+          path: dist/
+
+      - name: Verify distributions
+        run: |
+          ls -lh dist/
+          pip install twine
+          twine check dist/*
+
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          skip-existing: true
+
+      - name: Create GitHub Release with artifacts
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v1
+        with:
+          files: dist/*
+          draft: false
+          prerelease: false
