@@ -12,7 +12,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, macos-latest]
-        python-version: ["3.11", "3.12", "3.13"]
+        python-version: ["3.9", "3.10", "3.11", "3.12", "3.13", "3.14"]
 
     steps:
       - uses: actions/checkout@v4
@@ -42,7 +42,7 @@ jobs:
         run: mypy rclone/ --strict
 
       - name: Run tests (unit only)
-        run: pytest tests/ -v -m "not integration" --cov=rclone_adapter --cov-report=xml
+        run: pytest tests/ -v -m "not integration" --cov=rclone --cov-report=xml
 
       - name: Run integration tests
         run: pytest tests/ -v -m integration
