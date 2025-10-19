@@ -42,14 +42,14 @@ jobs:
 
           # x86_64
           curl -L -o /tmp/rclone-linux-amd64.zip https://downloads.rclone.org/rclone-current-linux-amd64.zip
-          cd /tmp && unzip -q rclone-linux-amd64.zip && cd -
-          cp /tmp/rclone-*/rclone rclone/bin/rclone-linux-amd64 2>/dev/null || cp /tmp/rclone rclone/bin/rclone-linux-amd64
+          mkdir -p /tmp/rclone-amd64-extract && unzip -q /tmp/rclone-linux-amd64.zip -d /tmp/rclone-amd64-extract
+          cp /tmp/rclone-amd64-extract/rclone-*/rclone rclone/bin/rclone-linux-amd64 2>/dev/null || cp /tmp/rclone-amd64-extract/rclone rclone/bin/rclone-linux-amd64
           chmod +x rclone/bin/rclone-linux-amd64
 
           # arm64
           curl -L -o /tmp/rclone-linux-arm64.zip https://downloads.rclone.org/rclone-current-linux-arm64.zip
-          cd /tmp && rm -rf rclone-* && unzip -q rclone-linux-arm64.zip && cd -
-          cp /tmp/rclone-*/rclone rclone/bin/rclone-linux-arm64 2>/dev/null || cp /tmp/rclone rclone/bin/rclone-linux-arm64
+          mkdir -p /tmp/rclone-arm64-extract && unzip -q /tmp/rclone-linux-arm64.zip -d /tmp/rclone-arm64-extract
+          cp /tmp/rclone-arm64-extract/rclone-*/rclone rclone/bin/rclone-linux-arm64 2>/dev/null || cp /tmp/rclone-arm64-extract/rclone rclone/bin/rclone-linux-arm64
           chmod +x rclone/bin/rclone-linux-arm64
 
       - name: Download rclone binaries (macOS)
@@ -59,14 +59,14 @@ jobs:
 
           # Intel x86_64
           curl -L -o /tmp/rclone-macos-amd64.zip https://downloads.rclone.org/rclone-current-osx-amd64.zip
-          cd /tmp && unzip -q rclone-macos-amd64.zip && cd -
-          cp /tmp/rclone-*/rclone rclone/bin/rclone-macos-x86_64 2>/dev/null || cp /tmp/rclone rclone/bin/rclone-macos-x86_64
+          mkdir -p /tmp/rclone-amd64-extract && unzip -q /tmp/rclone-macos-amd64.zip -d /tmp/rclone-amd64-extract
+          cp /tmp/rclone-amd64-extract/rclone-*/rclone rclone/bin/rclone-macos-x86_64 2>/dev/null || cp /tmp/rclone-amd64-extract/rclone rclone/bin/rclone-macos-x86_64
           chmod +x rclone/bin/rclone-macos-x86_64
 
           # ARM64 (Apple Silicon)
           curl -L -o /tmp/rclone-macos-arm64.zip https://downloads.rclone.org/rclone-current-osx-arm64.zip
-          cd /tmp && rm -rf rclone-* && unzip -q rclone-macos-arm64.zip && cd -
-          cp /tmp/rclone-*/rclone rclone/bin/rclone-macos-arm64 2>/dev/null || cp /tmp/rclone rclone/bin/rclone-macos-arm64
+          mkdir -p /tmp/rclone-arm64-extract && unzip -q /tmp/rclone-macos-arm64.zip -d /tmp/rclone-arm64-extract
+          cp /tmp/rclone-arm64-extract/rclone-*/rclone rclone/bin/rclone-macos-arm64 2>/dev/null || cp /tmp/rclone-arm64-extract/rclone rclone/bin/rclone-macos-arm64
           chmod +x rclone/bin/rclone-macos-arm64
 
       - name: Download rclone binaries (Windows)
@@ -106,8 +106,8 @@ jobs:
 
           # x86_64
           curl -L -o /tmp/rclone-linux-amd64.zip https://downloads.rclone.org/rclone-current-linux-amd64.zip
-          cd /tmp && unzip -q rclone-linux-amd64.zip && cd -
-          cp /tmp/rclone-*/rclone rclone/bin/rclone-linux-amd64 2>/dev/null || cp /tmp/rclone rclone/bin/rclone-linux-amd64
+          mkdir -p /tmp/rclone-extract && unzip -q /tmp/rclone-linux-amd64.zip -d /tmp/rclone-extract
+          cp /tmp/rclone-extract/rclone-*/rclone rclone/bin/rclone-linux-amd64 2>/dev/null || cp /tmp/rclone-extract/rclone rclone/bin/rclone-linux-amd64
           chmod +x rclone/bin/rclone-linux-amd64
 
       - name: Build sdist
