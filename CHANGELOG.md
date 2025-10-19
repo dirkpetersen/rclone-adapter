@@ -5,6 +5,37 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.0] - 2025-10-19
+
+### Added
+
+- **Comprehensive Changelog Maintenance Guide** in CLAUDE.md
+  - Detailed release workflow with step-by-step instructions
+  - Changelog best practices and format conventions
+  - Automated PyPI publishing process documentation
+  - Troubleshooting guide for common release issues
+  - Semantic versioning guidelines
+
+- **Enhanced Documentation**:
+  - CHANGELOG.md with complete v0.1.0 release notes
+  - Platform-specific installation instructions in README
+  - Development notes on changelog maintenance in CLAUDE.md
+  - Release process automation details
+
+### Changed
+
+- Updated README with clearer platform-specific installation guidance
+  - Linux wheels include bundled rclone binaries
+  - macOS/Windows source distribution approach
+  - System rclone fallback behavior explanation
+
+### Documentation
+
+- Added complete release management section to CLAUDE.md
+- Introduced Keep a Changelog format with examples
+- Documented 4-step release workflow
+- Added changelog best practices and conventions
+
 ## [0.1.0] - 2025-10-19
 
 ### Added
