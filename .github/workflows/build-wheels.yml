@@ -35,7 +35,23 @@ jobs:
         with:
           platforms: arm64
 
-      - name: Create empty rclone bin directory
+      - name: Download rclone binary (Linux only)
+        if: runner.os == 'Linux'
+        run: |
+          mkdir -p rclone/bin
+          # Download for Linux platforms
+          curl -L -o /tmp/rclone-linux-amd64.zip https://downloads.rclone.org/rclone-current-linux-amd64.zip
+          mkdir -p /tmp/rclone-amd64-extract && unzip -q /tmp/rclone-linux-amd64.zip -d /tmp/rclone-amd64-extract
+          cp /tmp/rclone-amd64-extract/rclone-*/rclone rclone/bin/rclone-linux-amd64 2>/dev/null || cp /tmp/rclone-amd64-extract/rclone rclone/bin/rclone-linux-amd64
+          chmod +x rclone/bin/rclone-linux-amd64
+
+          curl -L -o /tmp/rclone-linux-arm64.zip https://downloads.rclone.org/rclone-current-linux-arm64.zip
+          mkdir -p /tmp/rclone-arm64-extract && unzip -q /tmp/rclone-linux-arm64.zip -d /tmp/rclone-arm64-extract
+          cp /tmp/rclone-arm64-extract/rclone-*/rclone rclone/bin/rclone-linux-arm64 2>/dev/null || cp /tmp/rclone-arm64-extract/rclone rclone/bin/rclone-linux-arm64
+          chmod +x rclone/bin/rclone-linux-arm64
+
+      - name: Create empty rclone bin directory (macOS/Windows)
+        if: runner.os != 'Linux'
         run: mkdir -p rclone/bin
 
       - name: Build wheels with cibuildwheel

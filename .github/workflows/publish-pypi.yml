@@ -38,8 +38,14 @@ jobs:
       - name: Install build dependencies
         run: pip install -U pip build wheel setuptools
 
-      - name: Create empty rclone bin directory
-        run: mkdir -p rclone/bin
+      - name: Download rclone binary for sdist
+        run: |
+          mkdir -p rclone/bin
+          # Download Linux rclone binary for source distribution
+          curl -L -o /tmp/rclone-linux-amd64.zip https://downloads.rclone.org/rclone-current-linux-amd64.zip
+          mkdir -p /tmp/rclone-extract && unzip -q /tmp/rclone-linux-amd64.zip -d /tmp/rclone-extract
+          cp /tmp/rclone-extract/rclone-*/rclone rclone/bin/rclone-linux-amd64 2>/dev/null || cp /tmp/rclone-extract/rclone rclone/bin/rclone-linux-amd64
+          chmod +x rclone/bin/rclone-linux-amd64
 
       - name: Build distributions
         id: build
