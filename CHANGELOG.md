@@ -5,91 +5,155 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.1.0] - 2025-01-19
+## [0.1.0] - 2025-10-19
 
 ### Added
 
-- Initial public release of rclone-adapter
+- **Initial public release** of rclone-adapter
 - **Async-first Python wrapper** for rclone with full async/await support
-- **Core client library** with RClone class for all major operations
-- **Type-safe API** with comprehensive type hints (PEP 561 compliant)
-- **Bundled rclone binaries** in wheels for:
-  - Linux: x86_64, ARM64
-  - macOS: Intel x86_64, Apple Silicon ARM64
-  - Windows: x86_64
-- **Progress tracking** with:
-  - Real-time event streaming via AsyncIterator
-  - Adaptive progress interval throttling
-  - Detailed error categorization
-- **Full command coverage** for all 54 rclone subcommands with auto-generated options:
-  - sync, copy, move, bisync operations
-  - Listing commands (ls, lsd, lsl, lsjson, lsf, tree, ncdu)
-  - Verification commands (check, checksum, cryptcheck, hashsum, md5sum, sha1sum)
-  - Configuration commands (config, authorize, obscure, listremotes)
-  - Serve commands (serve, mount, nfsmount, rcd)
-  - Utility commands (40+ others)
-
-- **Flexible configuration** supporting:
-  - Environment variables (RCLONE_*, AWS_*, AZURE_*, GCS_*, GOOGLE_*)
-  - rclone config files
-  - Custom rclone executable paths
-  - Auto-detection of bundled binary
-
+- **All 54 rclone subcommands** supported with auto-generated type-safe Pydantic models
+- **Bundled rclone binaries** for Linux (x86_64, ARM64) in wheels
+- **AsyncIterator-based streaming API** for real-time progress events
+- **Three API styles**:
+  - `async for event in rc.sync_stream()` - Real-time progress streaming
+  - `result = await rc.sync()` - Simple async with final result
+  - `result = rc.sync_blocking()` - Sync wrapper for non-async code
+- **Event types**: `ProgressEvent`, `ErrorEvent`, `SyncResult`, `CopyResult`, etc.
+- **Adaptive progress throttling** with command-specific grace periods
 - **Structured logging** with structlog integration
-- **Pretty output** with rich terminal formatting
-- **Dual API styles**:
-  - Streaming API for real-time progress
-  - Simple API for fire-and-forget operations
-  - Blocking wrapper for non-async code
-
-- **Comprehensive CI/CD**:
-  - GitHub Actions workflows for testing (Python 3.10-3.14)
-  - Multi-platform wheel building (Linux, macOS, Windows)
+- **Terminal output** with rich library for progress bars
+- **Type safety**: Full type hints for IDE autocomplete, mypy strict mode compliance
+- **Configuration validation** with Pydantic v2
+- **Comprehensive exception hierarchy**: `RCloneError`, `RCloneNotFoundError`, `RCloneProcessError`
+- **Process management**: Graceful shutdown, signal handling, orphan cleanup
+- **Subprocess streaming**: Non-blocking output reading with proper EOF handling
+- **JSON log parsing**: Parse rclone's `--use-json-log` output
+- **Platform detection**: Automatic selection of bundled rclone binary
+- **Full test suite**:
+  - Unit tests with mocked time for long-running operations
+  - Integration tests (marked with `@pytest.mark.integration`)
+  - Type checking with mypy strict mode
+  - Code linting with ruff
+- **GitHub Actions CI/CD**:
+  - Test workflow for Python 3.10-3.14
+  - Lint and type checking
+  - Build workflow for Linux wheels (x86_64, ARM64)
   - Automated PyPI publishing with trusted publishers
-  - Automated TestPyPI deployment from main branch
+  - GitHub release creation with artifacts
+- **Package structure**:
+  - Core async client (`client.py`)
+  - Pydantic models for config, events, results (`models.py`)
+  - Process management (`process.py`)
+  - Log parsing (`parser.py`)
+  - Utility functions (`util.py`)
+  - Exception hierarchy (`exceptions.py`)
+  - PEP 561 type marker (`py.typed`)
+  - Auto-generated command options (`_generated/`)
+- **Documentation**:
+  - Comprehensive README with quick start examples
+  - CLAUDE.md developer guide with architecture decisions
+  - CHANGELOG.md (this file)
+- **Package metadata**:
+  - MIT License
+  - Python 3.10, 3.11, 3.12, 3.13, 3.14+ support
+  - Core dependencies: pydantic>=2.0, rich>=13.0, structlog>=24.0
+  - Optional API extra: fastapi, rq, redis, uvicorn
+  - Optional dev extra: pytest, mypy, ruff, freezegun, fakeredis
 
-- **Developer-friendly**:
-  - CLAUDE.md with comprehensive development guide
-  - Well-structured modular architecture
-  - Full test suite with pytest
-  - Modern Python tooling (ruff, mypy, pytest-asyncio)
+### Fixed
+
+- Resolved PyPI trusted publisher authentication by removing intermediate `twine check` step
+- Fixed rclone binary extraction from zip files with separate per-architecture directories
+- Corrected workflow conditions for tag-based vs main-branch publishing
 
 ### Technical Details
 
-- **Python Support**: 3.10, 3.11, 3.12, 3.13, 3.14+
-- **Core Dependencies**:
-  - pydantic>=2.0 (data validation)
-  - rich>=13.0 (terminal output)
-  - structlog>=24.0 (structured logging)
-- **Optional Dependencies** [api]:
-  - fastapi>=0.110
-  - rq>=1.16 (Redis Queue)
-  - redis>=5.0
-  - uvicorn>=0.27
+**Architecture**:
+- Async-first with `asyncio.create_subprocess_exec` for non-blocking execution
+- Event-driven architecture using AsyncIterator for streaming results
+- Modular code generation for 54 rclone subcommands via `generate.py`
+- Lazy import pattern to minimize startup time
 
-### Architecture Highlights
+**Dependencies**:
+- Pydantic v2 for configuration validation and structured data
+- rich for terminal UI and progress bars
+- structlog for structured logging
+- setuptools_scm for dynamic versioning
 
-- **Async subprocess management** with graceful shutdown and command-specific grace periods
-- **JSON-based log parsing** from rclone's `--use-json-log` output
-- **Dynamic command discovery** from rclone help text (generate.py)
-- **importlib.resources** for robust bundled binary access across installation types
-- **Pydantic v2** for all data models and validation
-- **Event-driven architecture** for long-running operations
+**Quality Assurance**:
+- 100% type hints with mypy in strict mode
+- ruff for fast linting and formatting
+- pytest for comprehensive test coverage
+- Integration tests marked and skipped when rclone not available
+- Time mocking with freezegun for testing long-running operations
+
+**CI/CD**:
+- GitHub Actions on push, PR, and tag creation
+- Trusted publisher authentication (no tokens stored)
+- Multi-architecture wheel building with cibuildwheel
+- QEMU for cross-architecture builds (ARM64 on x86_64)
+- Automated PyPI publishing on version tags
 
 ### Known Limitations
 
-- API module (FastAPI/RQ integration) not yet implemented (planned for 0.2.0)
-- Integration tests require rclone installed on system
-- Some advanced rclone options may need documentation improvements
+- Windows and macOS wheel builds skipped (source distribution available)
+- rclone binary bundling currently Linux-only (users on macOS/Windows should install rclone separately)
+- Long-running operations (days) require external job queue (RQ, ARQ, pg_boss) for production use
 
 ### Future Roadmap
 
-- **0.2.0**: FastAPI + RQ integration for long-running jobs
-- **0.3.0**: Enhanced progress tracking and resumable transfers
-- **0.4.0**: Mount operations with FUSE support
-- **1.0.0**: Stable API with full documentation
+- [ ] **v0.2.0**: macOS and Windows wheel support
+- [ ] **v0.3.0**: FastAPI integration example with RQ job queue
+- [ ] **v0.4.0**: Progress persistence to Redis/database
+- [ ] **v1.0.0**: API stability guarantee, expanded documentation
+- [ ] **Beyond**: CLI interface, monitoring dashboard, advanced caching
+
+## Development Notes
+
+### How to Maintain This Changelog
+
+1. **Keep changelog up-to-date** with every release
+2. **Format**: Follow [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) conventions
+3. **Sections**: Added, Fixed, Changed, Deprecated, Removed, Security
+4. **Before release**:
+   - Update version in `pyproject.toml`
+   - Add section for new version with date
+   - Link to git tag at bottom
+5. **After release**:
+   - Create git tag: `git tag -a v0.X.Y -m "Release vX.Y.Z"`
+   - Push tag: `git push origin v0.X.Y`
+   - GitHub Actions automatically publishes to PyPI
+   - Verify on https://pypi.org/project/rclone-adapter/
+
+### Release Process
+
+```bash
+# 1. Update version in pyproject.toml
+# Example: version = "0.2.0"
+
+# 2. Update CHANGELOG.md with new section
+# Add [0.2.0] - YYYY-MM-DD header and changes
+
+# 3. Commit changes
+git add pyproject.toml CHANGELOG.md
+git commit -m "chore: Prepare release v0.2.0"
+
+# 4. Create and push tag
+git tag -a v0.2.0 -m "Release version 0.2.0"
+git push origin main
+git push origin v0.2.0
+
+# 5. Verify on PyPI (within 2-3 minutes)
+# https://pypi.org/project/rclone-adapter/0.2.0/
+```
+
+## Links
+
+- **PyPI**: https://pypi.org/project/rclone-adapter/
+- **GitHub**: https://github.com/dirkpetersen/rclone-adapter
+- **Issues**: https://github.com/dirkpetersen/rclone-adapter/issues
+- **Discussions**: https://github.com/dirkpetersen/rclone-adapter/discussions
 
 ---
 
-For detailed development information, see [CLAUDE.md](CLAUDE.md).
-For usage examples, see [README.md](README.md).
+**Status**: Alpha (0.1.0) - API is stable but may receive enhancements before 1.0 release.

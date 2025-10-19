@@ -30,14 +30,20 @@ A modern, async-first Python wrapper for [rclone](https://rclone.org/) with comp
 pip install rclone-adapter
 ```
 
-The wheel includes the latest rclone binary for your platform, so you don't need to install rclone separately!
+### Platform-Specific Details
 
-Alternatively, if you prefer to use your system's rclone:
+**Linux (x86_64, ARM64)**:
+- Wheels include bundled rclone binaries - no separate installation needed
+- `pip install rclone-adapter` is all you need!
 
-```bash
-pip install rclone-adapter
-# Then install rclone: https://rclone.org/install/
-```
+**macOS, Windows**:
+- Source distribution (`sdist`) available, but no pre-built wheels yet
+- Install rclone separately: https://rclone.org/install/
+- Then: `pip install rclone-adapter`
+
+**Using system rclone (any platform)**:
+- If you prefer your system's rclone installation, it will be used automatically
+- The bundled binary is used as a fallback if system rclone is not found
 
 ## Supported Python Versions
 
@@ -356,3 +362,10 @@ See [CHANGELOG.md](CHANGELOG.md) for release history and version changes.
 ---
 
 **Status**: Alpha (0.1.0) - API is stable but may receive enhancements before 1.0 release.
+
+**Latest Release**: [v0.1.0](https://github.com/dirkpetersen/rclone-adapter/releases/tag/v0.1.0) (2025-10-19)
+- Initial public release on PyPI
+- Full async/await support
+- All 54 rclone subcommands
+- Linux wheels with bundled rclone binaries
+- Comprehensive test suite and CI/CD

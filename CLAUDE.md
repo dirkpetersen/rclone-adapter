@@ -1026,3 +1026,183 @@ markers = [
     "integration: marks tests requiring rclone (deselect with '-m \"not integration\"')"
 ]
 ```
+
+## Changelog and Release Management
+
+### Maintaining CHANGELOG.md
+
+The project uses [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) format for tracking all notable changes. This changelog is **automatically referenced** by PyPI and GitHub, so it must be kept current with every release.
+
+#### Changelog Format
+
+**File**: `CHANGELOG.md` at repository root
+
+**Structure**:
+- One top-level heading: `# Changelog`
+- Version sections with format: `## [X.Y.Z] - YYYY-MM-DD`
+- Subsections: `### Added`, `### Fixed`, `### Changed`, `### Deprecated`, `### Removed`, `### Security`
+- Each change is a bullet point with context
+- Unreleased section (optional) for in-progress work
+
+**Example**:
+```markdown
+# Changelog
+
+## [0.2.0] - 2025-11-15
+
+### Added
+- New feature description
+- Another feature
+
+### Fixed
+- Bug fix description
+
+### Changed
+- Breaking change explanation
+
+## [0.1.0] - 2025-10-19
+
+### Added
+- Initial public release
+```
+
+#### When to Update Changelog
+
+1. **For every feature/bug fix**: Add entry immediately in development
+2. **Before release**: Ensure all changes since last release are documented
+3. **After release**: Section is finalized with date and version link
+
+#### Release Workflow
+
+**Step 1: Prepare Release**
+```bash
+# 1. Update version in pyproject.toml
+# Example: version = "0.2.0"
+
+# 2. Update CHANGELOG.md
+# - Change [Unreleased] to [0.2.0] - 2025-11-15
+# - Or create new [0.2.0] section with all changes since 0.1.0
+# - Review all entries for clarity and completeness
+```
+
+**Step 2: Create Commit and Tag**
+```bash
+# Commit changes
+git add pyproject.toml CHANGELOG.md
+git commit -m "chore: Release version 0.2.0
+
+- Update version to 0.2.0
+- Update CHANGELOG.md with release notes
+
+🤖 Generated with Claude Code
+
+Co-Authored-By: Claude <noreply@anthropic.com>"
+
+# Create annotated tag (required for GitHub release)
+git tag -a v0.2.0 -m "Release version 0.2.0"
+
+# Push to GitHub
+git push origin main
+git push origin v0.2.0
+```
+
+**Step 3: Verify Release**
+- GitHub Actions automatically builds and publishes to PyPI (2-3 minutes)
+- Check: https://pypi.org/project/rclone-adapter/0.2.0/
+- Verify wheel and sdist are present
+- Check that README and CHANGELOG are displayed correctly
+
+**Step 4: Create GitHub Release**
+```bash
+# If not automatically created, manually create with:
+gh release create v0.2.0 \
+  --title "Release v0.2.0" \
+  --notes "$(sed -n '/^## \[0.2.0\]/,/^## \[/p' CHANGELOG.md | head -n -1)"
+```
+
+#### Changelog Best Practices
+
+1. **Use consistent terminology**:
+   - "Add" / "Added" for new features
+   - "Fix" / "Fixed" for bug fixes
+   - "Change" / "Changed" for modifications
+   - "Remove" / "Removed" for deprecations
+   - "Security" for security patches
+
+2. **Be descriptive but concise**:
+   - ✅ "Add async progress streaming with adaptive throttling"
+   - ❌ "Fix stuff" or "Improve things"
+
+3. **Link to related issues/PRs** (optional but helpful):
+   - "Fix deadlock in subprocess cleanup (#123)"
+   - "Add type hints to parser module (#125)"
+
+4. **Document breaking changes clearly**:
+   - "BREAKING: Rename `SyncOptions.dry_run` to `SyncOptions.check` - update your code"
+
+5. **Group logically related changes**:
+   - All "Added" items together
+   - All "Fixed" items together
+   - Etc.
+
+#### Unreleased Section (Optional)
+
+For ongoing development, you can optionally maintain an `[Unreleased]` section:
+
+```markdown
+## [Unreleased]
+
+### Added
+- (in development) New feature being worked on
+
+### Fixed
+- (in development) Bug fix being tested
+
+## [0.1.0] - 2025-10-19
+...
+```
+
+When releasing, convert `[Unreleased]` to `[0.2.0] - YYYY-MM-DD`.
+
+### Automated Release Process
+
+The repository uses GitHub Actions to **automate PyPI publishing**:
+
+1. **Tag push triggers build workflow**: `.github/workflows/build-wheels.yml`
+   - Builds Linux wheels for all Python versions and architectures
+   - Builds source distribution (sdist)
+   - Uploads artifacts to GitHub Actions
+
+2. **Artifacts trigger publish workflow**: `.github/workflows/publish-pypi.yml`
+   - Downloads build artifacts
+   - Publishes to PyPI using trusted publishers
+   - Creates GitHub release with artifacts
+   - Generates digital attestations (Sigstore)
+
+3. **No manual intervention needed** - everything is automated!
+
+### Troubleshooting Releases
+
+**Problem**: "Package already exists on PyPI"
+- **Solution**: Use unique version number. Can't republish same version.
+
+**Problem**: GitHub Actions publish failed
+- **Solution**: Check logs in Actions tab. Common issues:
+  - Version mismatch in pyproject.toml vs tag
+  - Missing CHANGELOG entry (metadata parsing issue)
+  - Trusted publisher configuration issue
+
+**Problem**: PyPI shows old README or CHANGELOG
+- **Solution**: PyPI caches for 10 minutes. Refresh page or wait.
+
+### Version Numbering
+
+Use [Semantic Versioning](https://semver.org/):
+- **MAJOR** (X.0.0): Breaking API changes
+- **MINOR** (0.X.0): New features, backward compatible
+- **PATCH** (0.0.X): Bug fixes only
+
+Examples:
+- 0.1.0 → 0.2.0 (feature release)
+- 0.1.0 → 0.1.1 (patch release)
+- 0.9.0 → 1.0.0 (major release, API stable)
