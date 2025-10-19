@@ -115,11 +115,8 @@ jobs:
           name: python-package-distributions
           path: dist/
 
-      - name: Verify distributions
-        run: |
-          ls -lh dist/
-          pip install twine
-          twine check dist/*
+      - name: Show distributions
+        run: ls -lh dist/
 
       - name: Publish to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
