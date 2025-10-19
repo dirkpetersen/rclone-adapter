@@ -4,14 +4,8 @@ from __future__ import annotations
 
 import platform
 import shutil
-import sys
 from pathlib import Path
-
-# Use importlib.resources.files for Python 3.9+
-if sys.version_info >= (3, 9):
-    from importlib.resources import files
-else:
-    from importlib_resources import files  # type: ignore[import-not-found]
+from importlib.resources import files
 
 
 def find_rclone_binary() -> str:

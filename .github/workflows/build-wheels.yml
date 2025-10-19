@@ -83,7 +83,7 @@ jobs:
       - name: Build wheels with cibuildwheel
         uses: pypa/cibuildwheel@v2.16.5
         env:
-          CIBW_BUILD: "cp{39,310,311,312,313,314}-*"
+          CIBW_BUILD: "cp{310,311,312,313,314}-*"
           CIBW_BEFORE_BUILD: "pip install -e ."
           CIBW_TEST_COMMAND: "python -c 'from rclone import RClone; print(\"✓ Import successful\")'"
 
