@@ -41,13 +41,13 @@ jobs:
           mkdir -p rclone/bin
 
           # x86_64
-          wget -q https://downloads.rclone.org/rclone-current-linux-amd64.zip -O /tmp/rclone-linux-amd64.zip
+          curl -L -o /tmp/rclone-linux-amd64.zip https://downloads.rclone.org/rclone-current-linux-amd64.zip
           unzip -q /tmp/rclone-linux-amd64.zip -d /tmp/
           find /tmp -maxdepth 3 -name "rclone" -type f | grep -v '^\.' | head -1 | xargs -I {} cp {} rclone/bin/rclone-linux-amd64
           chmod +x rclone/bin/rclone-linux-amd64
 
           # arm64
-          wget -q https://downloads.rclone.org/rclone-current-linux-arm64.zip -O /tmp/rclone-linux-arm64.zip
+          curl -L -o /tmp/rclone-linux-arm64.zip https://downloads.rclone.org/rclone-current-linux-arm64.zip
           unzip -q /tmp/rclone-linux-arm64.zip -d /tmp/
           find /tmp -maxdepth 3 -name "rclone" -type f | grep -v '^\.' | tail -1 | xargs -I {} cp {} rclone/bin/rclone-linux-arm64
           chmod +x rclone/bin/rclone-linux-arm64
@@ -58,13 +58,13 @@ jobs:
           mkdir -p rclone/bin
 
           # Intel x86_64
-          wget -q https://downloads.rclone.org/rclone-current-osx-amd64.zip -O /tmp/rclone-macos-amd64.zip
+          curl -L -o /tmp/rclone-macos-amd64.zip https://downloads.rclone.org/rclone-current-osx-amd64.zip
           unzip -q /tmp/rclone-macos-amd64.zip -d /tmp/
           find /tmp -maxdepth 3 -name "rclone" -type f | grep -v '^\.' | head -1 | xargs -I {} cp {} rclone/bin/rclone-macos-x86_64
           chmod +x rclone/bin/rclone-macos-x86_64
 
           # ARM64 (Apple Silicon)
-          wget -q https://downloads.rclone.org/rclone-current-osx-arm64.zip -O /tmp/rclone-macos-arm64.zip
+          curl -L -o /tmp/rclone-macos-arm64.zip https://downloads.rclone.org/rclone-current-osx-arm64.zip
           unzip -q /tmp/rclone-macos-arm64.zip -d /tmp/
           find /tmp -maxdepth 3 -name "rclone" -type f | grep -v '^\.' | tail -1 | xargs -I {} cp {} rclone/bin/rclone-macos-arm64
           chmod +x rclone/bin/rclone-macos-arm64
@@ -105,7 +105,7 @@ jobs:
           mkdir -p rclone/bin
 
           # x86_64
-          wget -q https://downloads.rclone.org/rclone-current-linux-amd64.zip -O /tmp/rclone-linux-amd64.zip
+          curl -L -o /tmp/rclone-linux-amd64.zip https://downloads.rclone.org/rclone-current-linux-amd64.zip
           unzip -q /tmp/rclone-linux-amd64.zip -d /tmp/
           find /tmp -maxdepth 3 -name "rclone" -type f | grep -v '^\.' | head -1 | xargs -I {} cp {} rclone/bin/rclone-linux-amd64
           chmod +x rclone/bin/rclone-linux-amd64

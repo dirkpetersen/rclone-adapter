@@ -43,7 +43,7 @@ jobs:
           mkdir -p rclone/bin
 
           # Download rclone binaries for current platform (Linux in CI)
-          wget -q https://downloads.rclone.org/rclone-current-linux-amd64.zip -O /tmp/rclone-amd64.zip
+          curl -L -o /tmp/rclone-amd64.zip https://downloads.rclone.org/rclone-current-linux-amd64.zip
           unzip -q /tmp/rclone-amd64.zip -d /tmp/
           find /tmp -name "rclone" -type f ! -path "*/.*" | head -1 | xargs -I {} cp {} rclone/bin/rclone-linux-amd64
           chmod +x rclone/bin/rclone-linux-amd64
