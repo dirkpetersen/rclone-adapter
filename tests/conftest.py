@@ -22,8 +22,9 @@ def mock_rclone_config():
     from rclone.models import RCloneConfig
 
     # Mock both find_rclone_binary and shutil.which to return consistent values
-    with patch("rclone.models.find_rclone_binary", return_value="rclone"), patch(
-        "shutil.which", return_value="rclone"
+    with (
+        patch("rclone.models.find_rclone_binary", return_value="rclone"),
+        patch("shutil.which", return_value="rclone"),
     ):
         config = RCloneConfig(
             rclone_path="rclone",
