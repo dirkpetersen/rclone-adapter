@@ -24,10 +24,10 @@ jobs:
           pip install ruff mypy
 
       - name: Run ruff format check
-        run: ruff format --check rclone/ tests/
+        run: ruff format --check rclone/ tests/ --exclude rclone/_generated
 
       - name: Run ruff lint
-        run: ruff check rclone/ tests/
+        run: ruff check rclone/ tests/ --exclude rclone/_generated
 
       - name: Run mypy
         run: |

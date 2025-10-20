@@ -36,7 +36,7 @@ jobs:
           pip install -e ".[dev]"
 
       - name: Run ruff
-        run: ruff check rclone/
+        run: ruff check rclone/ --exclude rclone/_generated
 
       - name: Run mypy
         run: mypy rclone/ --strict
