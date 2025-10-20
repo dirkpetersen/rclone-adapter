@@ -120,9 +120,9 @@ class ErrorEvent(BaseModel):
     retry_attempt: int = 0
     max_retries: int = 3
     is_retryable: bool = False
-    error_category: Literal[
-        "network", "permission", "space", "not_found", "config", "unknown"
-    ] = "unknown"
+    error_category: Literal["network", "permission", "space", "not_found", "config", "unknown"] = (
+        "unknown"
+    )
     error_code: str | None = None  # Rclone-specific error code
 
     @classmethod
@@ -132,21 +132,18 @@ class ErrorEvent(BaseModel):
         obj = error_dict.get("object")
 
         # Categorize error based on message
-        category: Literal[
-            "network", "permission", "space", "not_found", "config", "unknown"
-        ] = "unknown"
+        category: Literal["network", "permission", "space", "not_found", "config", "unknown"] = (
+            "unknown"
+        )
         is_retryable = False
 
         message_lower = message.lower()
         if any(
-            x in message_lower
-            for x in ["network", "connection", "timeout", "temporary", "retry"]
+            x in message_lower for x in ["network", "connection", "timeout", "temporary", "retry"]
         ):
             category = "network"
             is_retryable = True
-        elif any(
-            x in message_lower for x in ["permission", "denied", "forbidden", "unauthorized"]
-        ):
+        elif any(x in message_lower for x in ["permission", "denied", "forbidden", "unauthorized"]):
             category = "permission"
         elif any(x in message_lower for x in ["space", "quota", "full", "storage"]):
             category = "space"

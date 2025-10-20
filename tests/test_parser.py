@@ -1,6 +1,5 @@
 """Tests for rclone log parser."""
 
-
 from rclone.models import ErrorEvent, ProgressEvent
 from rclone.parser import (
     categorize_rclone_return_code,
