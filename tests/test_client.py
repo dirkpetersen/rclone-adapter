@@ -253,15 +253,34 @@ class TestRCloneIntegration:
 
     def test_sync_blocking_wrapper(self, mock_rclone_config, mock_subprocess):
         """Test synchronous wrapper for sync."""
+        from collections.abc import AsyncIterator
         from contextlib import asynccontextmanager
         from unittest.mock import patch
 
         @asynccontextmanager
         async def mock_run_command(cmd, env, command_name="default"):
-            async def mock_stderr():
-                yield b'{"level":"info","stats":{"bytes":1000,"totalBytes":1000}}'
+            mock_progress_lines = [b'{"level":"info","stats":{"bytes":1000,"totalBytes":1000}}']
 
-            mock_subprocess.stderr = mock_stderr()
+            class MockStderr(AsyncIterator):
+                """Mock stderr that supports both async iteration and read()."""
+
+                def __init__(self):
+                    self.lines = iter(mock_progress_lines)
+                    self.all_data = b"\n".join(mock_progress_lines)
+
+                def __aiter__(self):
+                    return self
+
+                async def __anext__(self):
+                    try:
+                        return next(self.lines)
+                    except StopIteration:
+                        raise StopAsyncIteration
+
+                async def read(self):
+                    return self.all_data
+
+            mock_subprocess.stderr = MockStderr()
             mock_subprocess.returncode = 0
             yield mock_subprocess
 
