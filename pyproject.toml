@@ -50,6 +50,7 @@ dev = [
     "ruff>=0.2,<1.0",
     "freezegun>=1.4,<2.0",
     "fakeredis>=2.21,<3.0",
+    "types-psutil>=6.0,<7.0",
 ]
 
 [project.urls]
