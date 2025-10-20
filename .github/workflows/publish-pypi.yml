@@ -130,3 +130,5 @@ jobs:
           files: dist/*
           draft: false
           prerelease: false
+          generate_release_notes: true
+        continue-on-error: true
