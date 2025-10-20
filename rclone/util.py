@@ -4,8 +4,8 @@ from __future__ import annotations
 
 import platform
 import shutil
-from pathlib import Path
 from importlib.resources import files
+from pathlib import Path
 
 
 def find_rclone_binary() -> str:

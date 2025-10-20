@@ -20,7 +20,7 @@ from rclone.models import (
     RCloneConfig,
     SyncResult,
 )
-from rclone.parser import categorize_rclone_return_code, extract_final_stats
+from rclone.parser import extract_final_stats
 from rclone.process import ProcessManager
 
 logger = structlog.get_logger()
@@ -201,9 +201,6 @@ class RClone:
 
             # Extract final stats
             final_stats = extract_final_stats(stderr) or {}
-
-            # Get return code info
-            return_code_info = categorize_rclone_return_code(process.returncode or 0)
 
             self.logger.info(
                 "client.command_completed",
